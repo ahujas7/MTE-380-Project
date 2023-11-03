@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "TCS34725.h"
+#include "tcs34725.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -46,8 +46,6 @@ I2C_HandleTypeDef hi2c1;
 TIM_HandleTypeDef htim1;
 
 UART_HandleTypeDef huart2;
-
-TCS34725_HandleTypeDef rgb_sensor;
 
 /* USER CODE BEGIN PV */
 
@@ -101,9 +99,9 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  tcs34725_get_device_id(&rgb_sensor, &hi2c1);
+  //tcs34725_get_device_id(&rgb_sensor, &hi2c1);
 
-  tcs34725_set_enable_reg(&rgb_sensor, &hi2c1);
+  //tcs34725_set_enable_reg(&rgb_sensor, &hi2c1);
 
   /* USER CODE END 2 */
 
@@ -112,13 +110,17 @@ int main(void)
 
   while (1)
   {
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
+      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
 
-	tcs34725_get_data(&rgb_sensor, &hi2c1);
+      //speed = (1000 - 1790) * (-1) / 3;
 
-	HAL_Delay(100);
+      HAL_Delay(500);
 
-
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
 
     /* USER CODE BEGIN 3 */
   }
@@ -129,7 +131,6 @@ int main(void)
   * @brief System Clock Configuration
   * @retval None
   */
-
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -317,7 +318,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LD2_Pin|GPIO_PIN_7, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, S0_Pin|S1_Pin|S2_Pin|S3_Pin, GPIO_PIN_RESET);
@@ -328,12 +332,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
+  /*Configure GPIO pins : LD2_Pin PA7 */
+  GPIO_InitStruct.Pin = LD2_Pin|GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PC5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : S0_Pin S1_Pin S2_Pin S3_Pin */
   GPIO_InitStruct.Pin = S0_Pin|S1_Pin|S2_Pin|S3_Pin;

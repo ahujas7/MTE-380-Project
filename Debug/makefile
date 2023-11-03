@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (10.3-2021.10)
+# Toolchain: GNU Tools for STM32 (11.3.rel1)
 ################################################################################
 
 -include ../makefile.init
@@ -60,8 +60,8 @@ all: main-build
 main-build: MTE-380-Project.elf secondary-outputs
 
 # Tool invocations
-MTE-380-Project.elf MTE-380-Project.map: $(OBJS) $(USER_OBJS) C:\Users\ahuja\STM32CubeIDE\workspace_1.12.1\MTE-380-Project\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "MTE-380-Project.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\ahuja\STM32CubeIDE\workspace_1.12.1\MTE-380-Project\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MTE-380-Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+MTE-380-Project.elf MTE-380-Project.map: $(OBJS) $(USER_OBJS) C:\Users\avane\OneDrive\ -\ University\ of\ Waterloo\Desktop\Uni\ Main\MTE\ 380\MTE-380-Project\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "MTE-380-Project.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\avane\OneDrive - University of Waterloo\Desktop\Uni Main\MTE 380\MTE-380-Project\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MTE-380-Project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
