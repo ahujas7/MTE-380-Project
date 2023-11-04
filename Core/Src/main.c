@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,16 +106,16 @@ int main(void)
 
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-
-  for (int x = 0; x <= 100; x += 1) {
-	  HAL_Delay(500);
-
-	  duty = x * 0.01;
-
-	  __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, (int)(duty * 625));
-  }
+//  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+//  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
+//
+//  for (int x = 0; x <= 100; x += 1) {
+//	  HAL_Delay(500);
+//
+//	  duty = x * 0.01;
+//
+//	  __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, (int)(duty * 625));
+//  }
 
 
   //tcs34725_get_device_id(&rgb_sensor, &hi2c1);
@@ -122,6 +123,12 @@ int main(void)
   //tcs34725_set_enable_reg(&rgb_sensor, &hi2c1);
 
   /* USER CODE END 2 */
+//
+//Pwm_Motor_Control(300, 8);
+//Pwm_Motor_Control(300, 2);
+//Pwm_Motor_Control(300, 4);
+//Pwm_Motor_Control(300, 6);
+
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -129,7 +136,14 @@ int main(void)
   while (1) {
 
     /* USER CODE END WHILE */
+	  bool checkButton = HAL_GPIO_ReadPin(GPIOC, B1_Pin);
 
+	  	  if (checkButton == GPIO_PIN_RESET) {
+	  		Pwm_Motor_Control(300, 8);
+	  		Pwm_Motor_Control(300, 2);
+	  		Pwm_Motor_Control(300, 4);
+	  		Pwm_Motor_Control(300, 6);
+	  	  }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -441,6 +455,112 @@ void Error_Handler(void)
   {
   }
   /* USER CODE END Error_Handler_Debug */
+}
+
+void Pwm_Motor_Control(int speed, int direction){
+
+	if(direction==8){
+
+		Pwm_Both_Motor_Forward(speed);
+
+		HAL_Delay(1000);
+
+		Pwm_Stop(speed);
+
+		HAL_Delay(1000);
+
+	} else if(direction==2){
+
+		Pwm_Both_Motor_Reverse(speed);
+
+		HAL_Delay(1000);
+
+		Pwm_Stop(speed);
+
+		HAL_Delay(1000);
+
+	}else if(direction==4){
+
+		Pwm_Rotate_CounterCW(speed);
+
+		HAL_Delay(1000);
+
+		Pwm_Stop(speed);
+
+		HAL_Delay(1000);
+
+	}else if(direction==6){
+
+		Pwm_Rotate_CW(speed);
+
+		HAL_Delay(1000);
+
+		Pwm_Stop(speed);
+
+		HAL_Delay(1000);
+
+	}
+
+
+}
+
+void Pwm_Both_Motor_Forward(int speed){
+
+	//RIGHT FORWARD
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	//LEFT FORWARD
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 1);
+
+	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
+
+}
+
+void Pwm_Both_Motor_Reverse(int speed){
+
+	//RIGHT REVERSE
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
+	//LEFT REVERSE
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
+
+	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
+
+}
+
+void Pwm_Rotate_CW(int speed){
+
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 1);
+
+	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
+
+}
+
+void Pwm_Rotate_CounterCW(int speed){
+
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
+
+	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
+
+}
+
+void Pwm_Stop(int speed){
+
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
+
+	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
+
 }
 
 #ifdef  USE_FULL_ASSERT

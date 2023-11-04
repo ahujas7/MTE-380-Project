@@ -219,6 +219,8 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
   }
 
 }
+
+
 /**
 * @brief TIM_Base MSP De-Initialization
 * This function freeze the hardware resources used in this example

@@ -49,12 +49,20 @@ extern "C" {
 
 /* USER CODE END EM */
 
+
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+
+void Pwm_Motor_Control(int speed, int direction);
+void Pwm_Both_Motor_Forward(int speed);
+void Pwm_Both_Motor_Reverse(int speed);
+void Pwm_Rotate_CW(int speed);
+void Pwm_Rotate_CounterCW(int speed);
+void Pwm_Stop(int speed);
 
 /* USER CODE END EFP */
 
@@ -75,6 +83,7 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+
 
 /* USER CODE END Private defines */
 
