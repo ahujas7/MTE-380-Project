@@ -45,6 +45,7 @@ I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart2;
 
@@ -59,6 +60,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 double duty;
@@ -102,6 +104,7 @@ int main(void)
   MX_TIM1_Init();
   MX_I2C1_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
@@ -118,17 +121,35 @@ int main(void)
 //  }
 
 
-  //tcs34725_get_device_id(&rgb_sensor, &hi2c1);
+  // CODE FOR PICK UP, DROP OFF AND MOVE TO SAFE ZONE
 
-  //tcs34725_set_enable_reg(&rgb_sensor, &hi2c1);
+  //turn so back faces (gripper) faces the Lego
+  Pwm_Motor_Control(300, 4, 500);
+  //reverse if needed for alignment
+  Pwm_Motor_Control(300, 2, 50);
+  //WRITE CODE FOR GRIPPER TO GRIP
+
+  //go ahead a bit
+  Pwm_Motor_Control(300, 8, 500);
+  //turn right
+  Pwm_Motor_Control(300, 6, 50);
+  //Go ahead towards the wall
+  Pwm_Motor_Control(300, 8, 50);
+  //TIME AND WRITE CODE FOR WHEN GRIPPER SHOULD OPEN
+
+  //turn left
+  Pwm_Motor_Control(300, 4, 50);
+  //go ahead till the start zone
+  Pwm_Motor_Control(300, 8, 10000);
+  //turn left
+  Pwm_Motor_Control(300, 4, 50);
+  //go ahead a bit
+  Pwm_Motor_Control(300, 8, 100);
+  //STOP
+  Pwm_Stop();
+
 
   /* USER CODE END 2 */
-//
-//Pwm_Motor_Control(300, 8);
-//Pwm_Motor_Control(300, 2);
-//Pwm_Motor_Control(300, 4);
-//Pwm_Motor_Control(300, 6);
-
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -136,15 +157,23 @@ int main(void)
   while (1) {
 
     /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+
+//	  8 is forward
+//	  2 is reverse
+//	  4 is CCW rotation
+//	  6 is CW rotation
+
 	  bool checkButton = HAL_GPIO_ReadPin(GPIOC, B1_Pin);
 
-	  	  if (checkButton == GPIO_PIN_RESET) {
-	  		Pwm_Motor_Control(300, 8);
-	  		Pwm_Motor_Control(300, 2);
-	  		Pwm_Motor_Control(300, 4);
-	  		Pwm_Motor_Control(300, 6);
-	  	  }
-    /* USER CODE BEGIN 3 */
+	  	  	  if (checkButton == GPIO_PIN_RESET) {
+	  	  		Pwm_Motor_Control(300, 8, 50);
+	  	  		Pwm_Motor_Control(300, 2, 50);
+	  	  		Pwm_Motor_Control(300, 4, 50);
+	  	  		Pwm_Motor_Control(300, 6, 50);
+	  	  	  }
+
   }
   /* USER CODE END 3 */
 }
@@ -309,9 +338,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 127;
+  htim2.Init.Prescaler = 15;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 625;
+  htim2.Init.Period = 9999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -345,6 +374,65 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 2 */
   HAL_TIM_MspPostInit(&htim2);
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 420;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 1000;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
 
 }
 
@@ -457,50 +545,71 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-void Pwm_Motor_Control(int speed, int direction){
+void Pwm_Motor_Control(int speed, int direction, int delay){
 
 	if(direction==8){
 
-		Pwm_Both_Motor_Forward(speed);
+		Pwm_Right_Motor_Forward(speed);
+		Pwm_Left_Motor_Forward(speed);
 
-		HAL_Delay(1000);
+		HAL_Delay(delay);
 
 		Pwm_Stop(speed);
 
-		HAL_Delay(1000);
+		HAL_Delay(delay);
 
 	} else if(direction==2){
 
 		Pwm_Both_Motor_Reverse(speed);
 
-		HAL_Delay(1000);
+		HAL_Delay(delay);
 
 		Pwm_Stop(speed);
 
-		HAL_Delay(1000);
+		HAL_Delay(delay);
 
 	}else if(direction==4){
 
 		Pwm_Rotate_CounterCW(speed);
 
-		HAL_Delay(1000);
+		HAL_Delay(delay);
 
 		Pwm_Stop(speed);
 
-		HAL_Delay(1000);
+		HAL_Delay(delay);
 
 	}else if(direction==6){
 
 		Pwm_Rotate_CW(speed);
 
-		HAL_Delay(1000);
+		HAL_Delay(delay);
 
 		Pwm_Stop(speed);
 
-		HAL_Delay(1000);
+		HAL_Delay(delay);
 
 	}
 
+
+}
+
+void Pwm_Right_Motor_Forward(int speed){
+
+	//RIGHT FORWARD
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+
+	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
+
+}
+
+void Pwm_Left_Motor_Forward(int speed){
+
+	//RIGHT FORWARD
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+
+	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, (int)speed-20);
 
 }
 
@@ -552,14 +661,13 @@ void Pwm_Rotate_CounterCW(int speed){
 
 }
 
-void Pwm_Stop(int speed){
+void Pwm_Stop(){
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
 
-	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
 
 }
 

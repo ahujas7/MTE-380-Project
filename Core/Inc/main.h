@@ -49,7 +49,6 @@ extern "C" {
 
 /* USER CODE END EM */
 
-
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -57,12 +56,15 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
-void Pwm_Motor_Control(int speed, int direction);
+void Pwm_Motor_Control(int speed, int direction, int delay);
+
+void Pwm_Right_Motor_Forward(int speed);
+void Pwm_Left_Motor_Forward(int speed);
 void Pwm_Both_Motor_Forward(int speed);
 void Pwm_Both_Motor_Reverse(int speed);
 void Pwm_Rotate_CW(int speed);
 void Pwm_Rotate_CounterCW(int speed);
-void Pwm_Stop(int speed);
+void Pwm_Stop();
 
 /* USER CODE END EFP */
 
