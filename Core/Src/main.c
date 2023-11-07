@@ -109,6 +109,7 @@ int main(void)
 
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
+
 //  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
 //  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
 //
@@ -120,35 +121,34 @@ int main(void)
 //	  __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, (int)(duty * 625));
 //  }
 
-
   // CODE FOR PICK UP, DROP OFF AND MOVE TO SAFE ZONE
 
-  //turn so back faces (gripper) faces the Lego
-  Pwm_Motor_Control(300, 4, 500);
-  //reverse if needed for alignment
-  Pwm_Motor_Control(300, 2, 50);
-  //WRITE CODE FOR GRIPPER TO GRIP
+//  //turn so back faces (gripper) faces the Lego
+//  Pwm_Motor_Control(300, 4, 500);
+//  //reverse if needed for alignment
+//  Pwm_Motor_Control(300, 2, 50);
+//  //WRITE CODE FOR GRIPPER TO GRIP
 
-  //go ahead a bit
-  Pwm_Motor_Control(300, 8, 500);
-  //turn right
-  Pwm_Motor_Control(300, 6, 50);
-  //Go ahead towards the wall
-  Pwm_Motor_Control(300, 8, 50);
-  //TIME AND WRITE CODE FOR WHEN GRIPPER SHOULD OPEN
+//  //go ahead a bit
+//  Pwm_Motor_Control(300, 8, 500);
+//  //turn right
+//  Pwm_Motor_Control(300, 6, 50);
+//  //Go ahead towards the wall
+//  Pwm_Motor_Control(300, 8, 50);
+//  //TIME AND WRITE CODE FOR WHEN GRIPPER SHOULD OPEN
+//
+//  //turn left
+//  Pwm_Motor_Control(300, 4, 50);
+//  //go ahead till the start zone
+//  Pwm_Motor_Control(300, 8, 10000);
+//  //turn left
+//  Pwm_Motor_Control(300, 4, 50);
+//  //go ahead a bit
+//  Pwm_Motor_Control(300, 8, 100);
+//  //STOP
+//  Pwm_Stop();
 
-  //turn left
-  Pwm_Motor_Control(300, 4, 50);
-  //go ahead till the start zone
-  Pwm_Motor_Control(300, 8, 10000);
-  //turn left
-  Pwm_Motor_Control(300, 4, 50);
-  //go ahead a bit
-  Pwm_Motor_Control(300, 8, 100);
-  //STOP
-  Pwm_Stop();
-
-
+  //Pwm_Both_Motor_Forward(300);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -168,10 +168,10 @@ int main(void)
 	  bool checkButton = HAL_GPIO_ReadPin(GPIOC, B1_Pin);
 
 	  	  	  if (checkButton == GPIO_PIN_RESET) {
-	  	  		Pwm_Motor_Control(300, 8, 50);
-	  	  		Pwm_Motor_Control(300, 2, 50);
-	  	  		Pwm_Motor_Control(300, 4, 50);
-	  	  		Pwm_Motor_Control(300, 6, 50);
+
+	  	  		Pwm_Motor_Control(300, 2, 2000);
+	  	  		Pwm_Motor_Control(300, 4, 420);
+	  	  		Pwm_Motor_Control(300, 6, 2000);
 	  	  	  }
 
   }
@@ -195,14 +195,13 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 84;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -215,7 +214,7 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV8;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
@@ -338,9 +337,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 15;
+  htim2.Init.Prescaler = 127;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 9999;
+  htim2.Init.Period = 625;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -397,9 +396,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 420;
+  htim3.Init.Prescaler = 15;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 1000;
+  htim3.Init.Period = 9999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -544,13 +543,11 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
 void Pwm_Motor_Control(int speed, int direction, int delay){
 
 	if(direction==8){
 
-		Pwm_Right_Motor_Forward(speed);
-		Pwm_Left_Motor_Forward(speed);
+		Pwm_Both_Motor_Forward(speed);
 
 		HAL_Delay(delay);
 
@@ -670,7 +667,6 @@ void Pwm_Stop(){
 
 
 }
-
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
