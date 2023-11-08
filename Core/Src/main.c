@@ -120,7 +120,9 @@ int main(void)
 //
 //	  __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, (int)(duty * 625));
 //  }
-
+//  Pwm_Stop();
+//  Pwm_Right_Motor_Forward(300);
+//  Pwm_Stop();
   // CODE FOR PICK UP, DROP OFF AND MOVE TO SAFE ZONE
 
 //  //turn so back faces (gripper) faces the Lego
@@ -169,9 +171,10 @@ int main(void)
 
 	  	  	  if (checkButton == GPIO_PIN_RESET) {
 
+	  	  		Pwm_Motor_Control(300, 8, 2000);
 	  	  		Pwm_Motor_Control(300, 2, 2000);
 	  	  		Pwm_Motor_Control(300, 4, 420);
-	  	  		Pwm_Motor_Control(300, 6, 2000);
+	  	  		Pwm_Motor_Control(300, 6, 420);
 	  	  	  }
 
   }
