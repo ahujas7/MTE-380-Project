@@ -63,11 +63,12 @@ static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 double duty;
-
+#define SERVO_Motor1   0
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 
 /* USER CODE END 0 */
 
@@ -87,7 +88,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  SERVO_Init(SERVO_Motor1);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -105,7 +106,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start(&htim2);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
 //
@@ -116,11 +117,9 @@ int main(void)
 
 
 
-
   //tcs34725_get_device_id(&rgb_sensor, &hi2c1);
 
   //tcs34725_set_enable_reg(&rgb_sensor, &hi2c1);
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -133,6 +132,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 500);
+	  HAL_Delay(2000);
+	  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 2000);
+	  HAL_Delay(2000);
   }
   /* USER CODE END 3 */
 }
@@ -173,7 +176,7 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV8;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
@@ -296,9 +299,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 419;
+  htim2.Init.Prescaler = 83;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 999;
+  htim2.Init.Period = 19999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
