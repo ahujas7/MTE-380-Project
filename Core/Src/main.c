@@ -128,20 +128,6 @@ int main(void)
 
   while (1) {
 
-//	  htim2.Instance->CCR1 = 25;  // duty cycle is .5 ms
-//	  HAL_Delay(2000);
-//	  htim2.Instance->CCR1 = 75;  // duty cycle is 1.5 ms
-//	  HAL_Delay(2000);
-//	  htim2.Instance->CCR1 = 125;  // duty cycle is 2.5 ms
-//	  HAL_Delay(2000);
-
-//	  int x;
-//
-//	  for(x=250; x<1250; x=x+1)
-//	      {
-//	        __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, x);
-//	        HAL_Delay(3);
-//	      }
 
 
     /* USER CODE END WHILE */
