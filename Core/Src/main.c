@@ -108,7 +108,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start(&htim2);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-
+  HAL_TIM_Base_Start(&htim3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
 //
 //
 //  HAL_Delay(100);
@@ -132,12 +133,22 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 500);
+	  uint16_t i=0;
+	  uint16_t j=0;
+
+	  for(j=1400;j>475;j-=35){
+		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, j);
+		  HAL_Delay(20);
+	  }
 	  HAL_Delay(2000);
-	  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 2000);
-	  HAL_Delay(2000);
+
+	  for(i=475;i<1400;i+=35){
+	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, i);
+	  HAL_Delay(50);
   }
+	  HAL_Delay(5000);
   /* USER CODE END 3 */
+}
 }
 
 /**
@@ -358,9 +369,9 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 15;
+  htim3.Init.Prescaler = 83;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 9999;
+  htim3.Init.Period = 19999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
