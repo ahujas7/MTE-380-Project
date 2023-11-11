@@ -1,3 +1,3 @@
-../Core/Src/TCS34725.c:12:19:tcs34725_get_data	1
-../Core/Src/TCS34725.c:32:19:tcs34725_get_device_id	1
-../Core/Src/TCS34725.c:47:19:tcs34725_set_enable_reg	1
+TCS34725.c:12:19:tcs34725_get_data	1
+TCS34725.c:32:19:tcs34725_get_device_id	1
+TCS34725.c:47:19:tcs34725_set_enable_reg	1

@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+#include "L298N.h"
 
 /* USER CODE END Includes */
 
@@ -50,6 +51,8 @@ TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+
+L298N_HandleTypeDef h_bridge;
 
 /* USER CODE END PV */
 
@@ -107,50 +110,36 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+  l298n_init(&htim2);
+
+  l298n_brake();
+
+  l298n_drive_forward(&h_bridge, &htim2, 40, 40);
+
+  HAL_Delay(2000);
+
+  l298n_brake();
+
+  l298n_drive_reverse(&h_bridge, &htim2, 40, 40);
+
+  HAL_Delay(2000);
+
+  l298n_brake();
+
+  l298n_rotate_clockwise(&h_bridge, &htim2, 40, 40);
+
+  HAL_Delay(2000);
+
+  l298n_brake();
+
+  l298n_rotate_counter(&h_bridge, &htim2, 40, 40);
+
+  HAL_Delay(2000);
+
+  l298n_brake();
 
 
-//  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
-//  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-//
-//  for (int x = 0; x <= 100; x += 1) {
-//	  HAL_Delay(500);
-//
-//	  duty = x * 0.01;
-//
-//	  __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, (int)(duty * 625));
-//  }
-//  Pwm_Stop();
-//  Pwm_Right_Motor_Forward(300);
-//  Pwm_Stop();
-  // CODE FOR PICK UP, DROP OFF AND MOVE TO SAFE ZONE
 
-//  //turn so back faces (gripper) faces the Lego
-//  Pwm_Motor_Control(300, 4, 500);
-//  //reverse if needed for alignment
-//  Pwm_Motor_Control(300, 2, 50);
-//  //WRITE CODE FOR GRIPPER TO GRIP
-
-//  //go ahead a bit
-//  Pwm_Motor_Control(300, 8, 500);
-//  //turn right
-//  Pwm_Motor_Control(300, 6, 50);
-//  //Go ahead towards the wall
-//  Pwm_Motor_Control(300, 8, 50);
-//  //TIME AND WRITE CODE FOR WHEN GRIPPER SHOULD OPEN
-//
-//  //turn left
-//  Pwm_Motor_Control(300, 4, 50);
-//  //go ahead till the start zone
-//  Pwm_Motor_Control(300, 8, 10000);
-//  //turn left
-//  Pwm_Motor_Control(300, 4, 50);
-//  //go ahead a bit
-//  Pwm_Motor_Control(300, 8, 100);
-//  //STOP
-//  Pwm_Stop();
-
-  //Pwm_Both_Motor_Forward(300);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -161,21 +150,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-//	  8 is forward
-//	  2 is reverse
-//	  4 is CCW rotation
-//	  6 is CW rotation
-
-	  bool checkButton = HAL_GPIO_ReadPin(GPIOC, B1_Pin);
-
-	  	  	  if (checkButton == GPIO_PIN_RESET) {
-
-	  	  		Pwm_Motor_Control(300, 8, 2000);
-	  	  		Pwm_Motor_Control(300, 2, 2000);
-	  	  		Pwm_Motor_Control(300, 4, 420);
-	  	  		Pwm_Motor_Control(300, 6, 420);
-	  	  	  }
 
   }
   /* USER CODE END 3 */
@@ -533,130 +507,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void Pwm_Motor_Control(int speed, int direction, int delay){
 
-	if(direction==8){
-
-		Pwm_Both_Motor_Forward(speed);
-
-		HAL_Delay(delay);
-
-		Pwm_Stop(speed);
-
-		HAL_Delay(delay);
-
-	} else if(direction==2){
-
-		Pwm_Both_Motor_Reverse(speed);
-
-		HAL_Delay(delay);
-
-		Pwm_Stop(speed);
-
-		HAL_Delay(delay);
-
-	}else if(direction==4){
-
-		Pwm_Rotate_CounterCW(speed);
-
-		HAL_Delay(delay);
-
-		Pwm_Stop(speed);
-
-		HAL_Delay(delay);
-
-	}else if(direction==6){
-
-		Pwm_Rotate_CW(speed);
-
-		HAL_Delay(delay);
-
-		Pwm_Stop(speed);
-
-		HAL_Delay(delay);
-
-	}
-
-
-}
-
-void Pwm_Right_Motor_Forward(int speed){
-
-	//RIGHT FORWARD
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-
-	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
-
-}
-
-void Pwm_Left_Motor_Forward(int speed){
-
-	//RIGHT FORWARD
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-
-	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, (int)speed-20);
-
-}
-
-void Pwm_Both_Motor_Forward(int speed){
-
-	//RIGHT FORWARD
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-	//LEFT FORWARD
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 1);
-
-	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
-
-}
-
-void Pwm_Both_Motor_Reverse(int speed){
-
-	//RIGHT REVERSE
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-	//LEFT REVERSE
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
-
-	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
-
-}
-
-void Pwm_Rotate_CW(int speed){
-
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 1);
-
-	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
-
-}
-
-void Pwm_Rotate_CounterCW(int speed){
-
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
-
-	 __HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2, speed);
-
-}
-
-void Pwm_Stop(){
-
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, 0);
-
-
-}
 /* USER CODE END 4 */
 
 /**

@@ -1,0 +1,7 @@
+../Core/Src/L298N.c:10:19:l298n_init	24	static
+../Core/Src/L298N.c:20:6:l298n_brake	8	static
+../Core/Src/L298N.c:26:6:l298n_drive_forward	32	static
+../Core/Src/L298N.c:38:6:l298n_drive_reverse	32	static
+../Core/Src/L298N.c:50:6:l298n_rotate_clockwise	32	static
+../Core/Src/L298N.c:62:6:l298n_rotate_counter	32	static
+../Core/Src/L298N.c:74:6:set_motor_gpios	24	static
