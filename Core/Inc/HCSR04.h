@@ -13,7 +13,7 @@
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
 #define ECHO_PIN GPIO_PIN_8
-#define ECHO_PORT GPIOA
+#define ECHO_PORT GPIOC
 
 // Device Struct
 typedef struct __HCSR04_HandleTypeDef {
