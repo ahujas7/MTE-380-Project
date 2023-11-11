@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+#include "SG90.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,7 +64,6 @@ static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 double duty;
-#define SERVO_Motor1   0
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -88,7 +88,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  SERVO_Init(SERVO_Motor1);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -133,23 +132,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  uint16_t i=0;
-	  uint16_t j=0;
 
-	  for(j=1400;j>475;j-=35){
-		  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, j);
-		  HAL_Delay(20);
-	  }
-	  HAL_Delay(2000);
+	  sg90_open(1);
+	  HAL_Delay(1000);
+	  sg90_close(1);
+	  HAL_Delay(1000);
 
-	  for(i=475;i<1400;i+=35){
-	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, i);
-	  HAL_Delay(50);
   }
-	  HAL_Delay(5000);
+
   /* USER CODE END 3 */
 }
-}
+
 
 /**
   * @brief System Clock Configuration
