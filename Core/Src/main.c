@@ -51,6 +51,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+SG90_HandleTypeDef servo;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -133,9 +135,9 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  sg90_open(1);
+	  sg90_open(&servo, &htim3);
 	  HAL_Delay(1000);
-	  sg90_close(1);
+	  sg90_close(&servo, &htim3);
 	  HAL_Delay(1000);
 
   }
