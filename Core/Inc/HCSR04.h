@@ -23,7 +23,7 @@ typedef struct __HCSR04_HandleTypeDef {
 } HCSR04_HandleTypeDef;
 
 
-HAL_StatusTypeDef hcsr04_init(HCSR04_HandleTypeDef *dev, TIM_HandleTypeDef *timer);
+HAL_StatusTypeDef hcsr04_init(TIM_HandleTypeDef *timer);
 
 void hcsr04_get_distance(HCSR04_HandleTypeDef *dev, TIM_HandleTypeDef *timer);
 

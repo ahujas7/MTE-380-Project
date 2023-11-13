@@ -24,7 +24,7 @@ typedef struct __L298N_HandleTypeDef {
 
 } L298N_HandleTypeDef;
 
-HAL_StatusTypeDef l298n_init(L298N_HandleTypeDef *dev, TIM_HandleTypeDef *timer);
+HAL_StatusTypeDef l298n_init(TIM_HandleTypeDef *timer);
 
 void l298n_brake(L298N_HandleTypeDef *dev);
 
