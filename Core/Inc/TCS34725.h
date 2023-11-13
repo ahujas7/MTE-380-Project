@@ -39,6 +39,10 @@ typedef struct __TCS34725_HandleTypeDef {
     uint8_t device_id;
     uint8_t enable_reg;
 
+    double r_ratio;
+    double g_ratio;
+    double b_ratio;
+
 } TCS34725_HandleTypeDef;
 
 

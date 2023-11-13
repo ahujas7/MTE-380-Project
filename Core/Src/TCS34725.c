@@ -25,6 +25,11 @@ HAL_StatusTypeDef tcs34725_get_data(TCS34725_HandleTypeDef *dev, I2C_HandleTypeD
 	dev->green = TO_16_BIT(val[5], val[4]);
 	dev->blue = TO_16_BIT(val[7], val[6]);
 
+	uint32_t sum = dev->red + dev->green + dev->blue;
+
+	dev->r_ratio = (double)dev->red / sum;
+	dev->g_ratio = (double)dev->green / sum;
+	dev->b_ratio = (double)dev->blue / sum;
 
     return ret;
 }
