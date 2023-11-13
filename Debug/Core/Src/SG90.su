@@ -1,0 +1,3 @@
+../Core/Src/SG90.c:9:19:sg90_init	24	static
+../Core/Src/SG90.c:18:6:sg90_open	24	static
+../Core/Src/SG90.c:31:6:sg90_close	24	static

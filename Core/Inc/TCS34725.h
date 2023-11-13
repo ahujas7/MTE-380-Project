@@ -9,7 +9,6 @@
 #define INC_TCS34725_H_
 
 #include "stm32f4xx_hal.h"
-#include <stdbool.h>
 
 #define TCS34725_DEV_ADDR               0x29
 
