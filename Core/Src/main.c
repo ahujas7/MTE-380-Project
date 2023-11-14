@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "main.h"
 #include "TCS34725.h"
+//#include "L298N.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,6 +54,15 @@ UART_HandleTypeDef huart2;
 TCS34725_HandleTypeDef rgb_sensor_left;
 TCS34725_HandleTypeDef rgb_sensor_right;
 
+// Define PID constants
+
+#define KP 1.2
+#define KI 1.0
+#define KD 0.1
+
+// Define target values (ADJUST)
+#define TARGET_VALUE 0.34
+#define TARGET_SPEED 45
 
 /* USER CODE END PV */
 
@@ -70,6 +80,38 @@ static void MX_I2C3_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// PID Controller structure
+typedef struct {
+    float previous_error;
+    float integral;
+} PID_Controller;
+
+
+// Initialize PID controller
+void PID_Init(PID_Controller *pid) {
+    pid->previous_error = 0;
+    pid->integral = 0;
+}
+
+int PID_Control(float sensor_value, PID_Controller *pid) {
+    float error = TARGET_VALUE - sensor_value;
+
+    // PID terms
+    float proportional = KP * error;
+    float integral = KI * (error + pid->integral);
+    float derivative = KD * (error - pid->previous_error);
+
+    // Calculate control signal
+    int control_signal = (int)(proportional + integral + derivative);
+
+    // Update PID values for next iteration
+    pid->previous_error = error;
+    pid->integral += error;
+
+    return control_signal;
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -79,6 +121,10 @@ static void MX_I2C3_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+	//L298N_HandleTypeDef motor;
+	PID_Controller pid;
+	PID_Init(&pid);
 
   /* USER CODE END 1 */
 
@@ -123,12 +169,25 @@ int main(void)
   {
 	  tcs34725_get_data(&rgb_sensor_left, &hi2c1);
 	  tcs34725_get_data(&rgb_sensor_right, &hi2c3);
-	  HAL_Delay(100);
+
+	  // Calculate the average sensor value from both sensors
+	  double sensor_value = (rgb_sensor_left.red + rgb_sensor_right.red) / 2; // Adjust this based on your sensor readings
+
+	  // Perform PID control to get motor speeds
+	  int control_signal = PID_Control(sensor_value, &pid);
+
+	  // Adjust motor speeds based on control signal
+	  //int left_speed = TARGET_SPEED + control_signal;
+	  //int right_speed = TARGET_SPEED - control_signal;
+
+	  // Apply control to motors
+	  //l298n_drive_forward(&motor, &htim2, left_speed, right_speed);
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
+  return 0;
   /* USER CODE END 3 */
 }
 
