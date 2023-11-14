@@ -31,7 +31,7 @@ void l298n_drive_forward(L298N_HandleTypeDef *dev, TIM_HandleTypeDef *timer, int
 	dev->left_duty = duty_left;
 	dev->right_duty = duty_right;
 
-	set_motor_gpios(GPIO_PIN_RESET, GPIO_PIN_SET, GPIO_PIN_RESET, GPIO_PIN_SET);
+	set_motor_gpios(GPIO_PIN_RESET, GPIO_PIN_SET, GPIO_PIN_SET, GPIO_PIN_RESET);
 
 	__HAL_TIM_SET_COMPARE(timer, LEFT_MOTOR_CHANNEL, ((double)dev->left_duty / 100) * COUNTER_PERIOD);
 	__HAL_TIM_SET_COMPARE(timer, RIGHT_MOTOR_CHANNEL, ((double)dev->right_duty / 100) * COUNTER_PERIOD);
@@ -43,7 +43,7 @@ void l298n_drive_reverse(L298N_HandleTypeDef *dev, TIM_HandleTypeDef *timer, int
 	dev->left_duty = duty_left;
 	dev->right_duty = duty_right;
 
-	set_motor_gpios(GPIO_PIN_SET, GPIO_PIN_RESET, GPIO_PIN_SET, GPIO_PIN_RESET);
+	set_motor_gpios(GPIO_PIN_SET, GPIO_PIN_RESET, GPIO_PIN_RESET, GPIO_PIN_SET);
 
 	__HAL_TIM_SET_COMPARE(timer, LEFT_MOTOR_CHANNEL, ((double)dev->left_duty / 100) * COUNTER_PERIOD);
 	__HAL_TIM_SET_COMPARE(timer, RIGHT_MOTOR_CHANNEL, ((double)dev->right_duty / 100) * COUNTER_PERIOD);
@@ -55,7 +55,7 @@ void l298n_rotate_clockwise(L298N_HandleTypeDef *dev, TIM_HandleTypeDef *timer, 
 	dev->left_duty = duty_left;
 	dev->right_duty = duty_right;
 
-	set_motor_gpios(GPIO_PIN_RESET, GPIO_PIN_SET, GPIO_PIN_SET, GPIO_PIN_RESET);
+	set_motor_gpios(GPIO_PIN_RESET, GPIO_PIN_SET, GPIO_PIN_RESET, GPIO_PIN_SET);
 
 	__HAL_TIM_SET_COMPARE(timer, LEFT_MOTOR_CHANNEL, ((double)dev->left_duty / 100) * COUNTER_PERIOD);
 	__HAL_TIM_SET_COMPARE(timer, RIGHT_MOTOR_CHANNEL, ((double)dev->right_duty / 100) * COUNTER_PERIOD);
@@ -67,7 +67,7 @@ void l298n_rotate_counter(L298N_HandleTypeDef *dev, TIM_HandleTypeDef *timer, in
 	dev->left_duty = duty_left;
 	dev->right_duty = duty_right;
 
-	set_motor_gpios(GPIO_PIN_SET, GPIO_PIN_RESET, GPIO_PIN_RESET, GPIO_PIN_SET);
+	set_motor_gpios(GPIO_PIN_SET, GPIO_PIN_RESET, GPIO_PIN_SET, GPIO_PIN_RESET);
 
 	__HAL_TIM_SET_COMPARE(timer, LEFT_MOTOR_CHANNEL, ((double)dev->left_duty / 100) * COUNTER_PERIOD);
 	__HAL_TIM_SET_COMPARE(timer, RIGHT_MOTOR_CHANNEL, ((double)dev->right_duty / 100) * COUNTER_PERIOD);

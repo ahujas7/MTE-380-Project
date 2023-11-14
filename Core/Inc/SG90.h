@@ -15,7 +15,7 @@
 
 typedef struct __SG90_HandleTypeDef {
 
-	//0 for close 1 for open
+	//0 for open 1 for close
    int position;
 
 } SG90_HandleTypeDef;

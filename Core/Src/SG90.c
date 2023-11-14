@@ -15,7 +15,7 @@ HAL_StatusTypeDef sg90_init(TIM_HandleTypeDef *timer) {
 	return ret;
 }
 
-void sg90_open(SG90_HandleTypeDef *dev, TIM_HandleTypeDef *timer) {
+void sg90_close(SG90_HandleTypeDef *dev, TIM_HandleTypeDef *timer) {
 
 	for(int i = 475; i < 1400; i += 35){
 
@@ -28,7 +28,7 @@ void sg90_open(SG90_HandleTypeDef *dev, TIM_HandleTypeDef *timer) {
 	dev->position = 1;
 }
 
-void sg90_close(SG90_HandleTypeDef *dev, TIM_HandleTypeDef *timer) {
+void sg90_open(SG90_HandleTypeDef *dev, TIM_HandleTypeDef *timer) {
 
 	for(int i=1400; i > 475; i -= 35){
 
