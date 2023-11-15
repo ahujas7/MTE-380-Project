@@ -142,36 +142,52 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  sg90_open(&gripper_servo, &htim3);
 
-  l298n_brake(&motor_driver);
+//  l298n_brake(&motor_driver);
+//
+//  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+//
+//  HAL_Delay(10);
+//
+//  l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
+//
+//  HAL_Delay(7000);
+//
+//  l298n_brake(&motor_driver);
 
-  l298n_drive_forward(&motor_driver, &htim2, 50, 50);
+  while(HAL_GPIO_ReadPin(GPIOC, B1_Pin));
+
+  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+
+  HAL_Delay(20);
+
+  l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
 
   while (1)
   {
 	  tcs34725_get_data(&rgb_sensor_left, &hi2c1);
 	  tcs34725_get_data(&rgb_sensor_right, &hi2c3);
 
-	  hcsr04_get_distance(&ultrasonic_sensor, &htim4);
+//	  hcsr04_get_distance(&ultrasonic_sensor, &htim4);
 
-	  if (rgb_sensor_left.g_ratio >= 0.45) {
+	  l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
 
-		  l298n_brake(&motor_driver);
-		  l298n_drive_forward(&motor_driver, &htim2, 50, 80);
+	  if (rgb_sensor_left.r_ratio >= 0.38) {
+
+		  l298n_drive_forward(&motor_driver, &htim2, 45, 65);
+		  HAL_Delay(300);
 	  }
-	  else if (rgb_sensor_right.g_ratio >= 0.45) {
+	  else if (rgb_sensor_right.r_ratio >= 0.38) {
 
-		  l298n_brake(&motor_driver);
-		  l298n_drive_forward(&motor_driver, &htim2, 80, 50);
-	  }
-	  else if ((rgb_sensor_right.r_ratio >= 0.40 || rgb_sensor_left.r_ratio >= 0.40) && gripper_servo.position == 0) {
-
-		  l298n_brake(&motor_driver);
-		  sg90_close(&gripper_servo, &htim3);
+		  l298n_drive_forward(&motor_driver, &htim2, 45, 48.5);
+		  HAL_Delay(300);
 	  }
 
-	  HAL_Delay(50);
+//	  else if ((rgb_sensor_right.r_ratio >= 0.40 || rgb_sensor_left.r_ratio >= 0.40) && gripper_servo.position == 0) {
+//
+//		  l298n_brake(&motor_driver);
+//		  sg90_close(&gripper_servo, &htim3);
+//	  }
 
     /* USER CODE END WHILE */
 
