@@ -1,5 +1,6 @@
 "./Core/Src/HCSR04.o"
 "./Core/Src/L298N.o"
+"./Core/Src/PID.o"
 "./Core/Src/SG90.o"
 "./Core/Src/TCS34725.o"
 "./Core/Src/main.o"

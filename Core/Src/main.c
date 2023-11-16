@@ -27,6 +27,17 @@
 #include "L298N.h"
 #include "SG90.h"
 #include "HCSR04.h"
+// Define P controller constant
+#define Kp 1.2
+
+// Define target values
+
+#define TARGET_SPEED_LEFT 45
+#define TARGET_SPEED_RIGHT 53
+
+int control_signal = 0;
+float error = 0;
+int left_speed = 0, right_speed = 0;
 
 /* USER CODE END Includes */
 
@@ -85,6 +96,45 @@ static void MX_TIM4_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+float getError() {
+	  tcs34725_get_device_id(&rgb_sensor_left, &hi2c1);
+	  tcs34725_get_device_id(&rgb_sensor_right, &hi2c3);
+
+    // Calculate the error based on the difference between sensor readings
+    error = (rgb_sensor_left.r_ratio - rgb_sensor_right.r_ratio)*100 ;
+
+    return error;
+}
+
+
+void P_Controller() {
+    // Get the proportional error
+    float error = getError();
+
+    // Calculate the control signal
+    control_signal = Kp * error;
+
+    // Adjust motor speeds based on control signal
+
+
+    if (error > 0) {
+        // Line is to the right, turn left
+        left_speed = TARGET_SPEED_LEFT - control_signal;
+        right_speed = TARGET_SPEED_RIGHT + control_signal;
+    } else if (error < 0) {
+        // Line is to the left, turn right
+        left_speed = TARGET_SPEED_LEFT - control_signal;
+        right_speed = TARGET_SPEED_RIGHT + control_signal;
+    } else {
+        // On the line, move forward
+        left_speed = TARGET_SPEED_LEFT;
+        right_speed = TARGET_SPEED_RIGHT;
+    }
+
+    // Apply control to motors
+    l298n_drive_forward(&motor_driver, &htim2, left_speed, right_speed);
+}
 
 /* USER CODE END 0 */
 
@@ -155,33 +205,35 @@ int main(void)
 //
 //  l298n_brake(&motor_driver);
 
-  while(HAL_GPIO_ReadPin(GPIOC, B1_Pin));
+  //while(HAL_GPIO_ReadPin(GPIOC, B1_Pin));
 
-  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+  //l298n_drive_forward(&motor_driver, &htim2, 100, 100);
 
-  HAL_Delay(20);
+  //HAL_Delay(20);
 
-  l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
+  //l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
 
   while (1)
   {
+
+	  P_Controller();
 	  tcs34725_get_data(&rgb_sensor_left, &hi2c1);
 	  tcs34725_get_data(&rgb_sensor_right, &hi2c3);
-
-//	  hcsr04_get_distance(&ultrasonic_sensor, &htim4);
-
-	  l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
-
-	  if (rgb_sensor_left.r_ratio >= 0.38) {
-
-		  l298n_drive_forward(&motor_driver, &htim2, 45, 65);
-		  HAL_Delay(300);
-	  }
-	  else if (rgb_sensor_right.r_ratio >= 0.38) {
-
-		  l298n_drive_forward(&motor_driver, &htim2, 45, 48.5);
-		  HAL_Delay(300);
-	  }
+//
+////	  hcsr04_get_distance(&ultrasonic_sensor, &htim4);
+//
+//	  l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
+//
+//	  if (rgb_sensor_left.r_ratio > 0.37) {
+//
+//		  l298n_drive_forward(&motor_driver, &htim2, 45, 75);
+//		  HAL_Delay(300);
+//	  }
+//	  else if (rgb_sensor_left.r_ratio - rgb_sensor_right.r_ratio < 0.2) {
+//
+//		  l298n_drive_forward(&motor_driver, &htim2, 48, 48.5);
+//		  HAL_Delay(200);
+//	  }
 
 //	  else if ((rgb_sensor_right.r_ratio >= 0.40 || rgb_sensor_left.r_ratio >= 0.40) && gripper_servo.position == 0) {
 //

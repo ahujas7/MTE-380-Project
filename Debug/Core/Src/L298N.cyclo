@@ -1,7 +1,7 @@
-L298N.c:10:19:l298n_init	1
-L298N.c:20:6:l298n_brake	1
-L298N.c:29:6:l298n_drive_forward	1
-L298N.c:41:6:l298n_drive_reverse	1
-L298N.c:53:6:l298n_rotate_clockwise	1
-L298N.c:65:6:l298n_rotate_counter	1
-L298N.c:77:6:set_motor_gpios	1
+../Core/Src/L298N.c:10:19:l298n_init	1
+../Core/Src/L298N.c:20:6:l298n_brake	1
+../Core/Src/L298N.c:29:6:l298n_drive_forward	1
+../Core/Src/L298N.c:41:6:l298n_drive_reverse	1
+../Core/Src/L298N.c:53:6:l298n_rotate_clockwise	1
+../Core/Src/L298N.c:65:6:l298n_rotate_counter	1
+../Core/Src/L298N.c:77:6:set_motor_gpios	1
