@@ -15,6 +15,7 @@
 
 // MAX17320G2 Data Registers
 #define TCS34725_ENABLE_REG          	0x00
+#define TCS34725_TIMING_REG           	0x01
 #define TCS34725_RGBC_REG           	0x14
 #define TCS34725_DEVICE_ID_REG          0x12
 
@@ -51,5 +52,7 @@ HAL_StatusTypeDef tcs34725_get_data(TCS34725_HandleTypeDef *dev, I2C_HandleTypeD
 HAL_StatusTypeDef tcs34725_get_device_id(TCS34725_HandleTypeDef *dev, I2C_HandleTypeDef *hi2c_device);
 
 HAL_StatusTypeDef tcs34725_set_enable_reg(TCS34725_HandleTypeDef *dev, I2C_HandleTypeDef *hi2c_device);
+
+HAL_StatusTypeDef tcs34725_set_timing_reg(TCS34725_HandleTypeDef *dev, I2C_HandleTypeDef *hi2c_device);
 
 #endif /* INC_TCS34725_H_ */

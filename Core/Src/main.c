@@ -113,6 +113,9 @@ int main(void)
   tcs34725_set_enable_reg(&rgb_sensor_left, &hi2c1);
   tcs34725_set_enable_reg(&rgb_sensor_right, &hi2c3);
 
+  tcs34725_set_timing_reg(&rgb_sensor_left, &hi2c1);
+  tcs34725_set_timing_reg(&rgb_sensor_right, &hi2c3);
+
 
   /* USER CODE END 2 */
 
@@ -123,7 +126,7 @@ int main(void)
   {
 	  tcs34725_get_data(&rgb_sensor_left, &hi2c1);
 	  tcs34725_get_data(&rgb_sensor_right, &hi2c3);
-	  HAL_Delay(100);
+	  HAL_Delay(10);
 
     /* USER CODE END WHILE */
 
