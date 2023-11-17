@@ -83,6 +83,12 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+typedef struct __PID_Controller {
+
+    float previous_error;
+    float integral;
+
+} PID_Controller_HandleTypeDef;
 
 /* USER CODE END Private defines */
 

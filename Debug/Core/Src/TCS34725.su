@@ -1,3 +1,4 @@
 ../Core/Src/TCS34725.c:12:19:tcs34725_get_data	56	static
 ../Core/Src/TCS34725.c:37:19:tcs34725_get_device_id	32	static
 ../Core/Src/TCS34725.c:52:19:tcs34725_set_enable_reg	32	static
+../Core/Src/TCS34725.c:71:19:tcs34725_set_timing_reg	32	static

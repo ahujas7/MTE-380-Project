@@ -28,17 +28,19 @@
 #include "SG90.h"
 #include "HCSR04.h"
 // Define P controller constant
-#define Kp 1.2
-
+#define KP 1.0
+#define KD 10
+#define KI 0
 // Define target values
 
-#define TARGET_SPEED_LEFT 45
-#define TARGET_SPEED_RIGHT 53
+#define TARGET_SPEED_LEFT 45 // Default: 45   RATIO is 12
+#define TARGET_SPEED_RIGHT 53 // Default: 53
+
 
 int control_signal = 0;
 float error = 0;
 int left_speed = 0, right_speed = 0;
-
+uint32_t diff = 0;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,6 +71,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+PID_Controller_HandleTypeDef pid;
+
 TCS34725_HandleTypeDef rgb_sensor_left;
 TCS34725_HandleTypeDef rgb_sensor_right;
 
@@ -98,43 +102,64 @@ static void MX_TIM4_Init(void);
 /* USER CODE BEGIN 0 */
 
 float getError() {
-	  tcs34725_get_device_id(&rgb_sensor_left, &hi2c1);
-	  tcs34725_get_device_id(&rgb_sensor_right, &hi2c3);
+
+	HAL_StatusTypeDef status1 = tcs34725_get_data(&rgb_sensor_left, &hi2c1);
+    HAL_StatusTypeDef status2 = tcs34725_get_data(&rgb_sensor_right, &hi2c3);
+
+	if (status1 != HAL_OK || status2 != HAL_OK) {
+		HAL_GPIO_WritePin(GPIOA, LD2_Pin, GPIO_PIN_SET);
+	}
+
 
     // Calculate the error based on the difference between sensor readings
-    error = (rgb_sensor_left.r_ratio - rgb_sensor_right.r_ratio)*100 ;
+    error = (rgb_sensor_left.r_ratio - rgb_sensor_right.r_ratio) * 100;
 
     return error;
 }
 
-
-void P_Controller() {
+void PID_Controller(PID_Controller_HandleTypeDef *pid) {
     // Get the proportional error
     float error = getError();
 
     // Calculate the control signal
-    control_signal = Kp * error;
+    float proportional = KP * error;
+    float integral = KI * (error + pid->integral);
+    float derivative = KD * (error - pid->previous_error);
+
+    // Calculate control signal
+    control_signal = (int)(proportional + derivative + integral);
+
+    // Update PID values for next iteration
+    pid->previous_error = error;
+    pid->integral += error;
 
     // Adjust motor speeds based on control signal
 
+    // Line is to the right, turn left
+    left_speed = TARGET_SPEED_LEFT - control_signal;
+    right_speed = TARGET_SPEED_RIGHT + control_signal + 12;
 
-    if (error > 0) {
-        // Line is to the right, turn left
-        left_speed = TARGET_SPEED_LEFT - control_signal;
-        right_speed = TARGET_SPEED_RIGHT + control_signal;
-    } else if (error < 0) {
-        // Line is to the left, turn right
-        left_speed = TARGET_SPEED_LEFT - control_signal;
-        right_speed = TARGET_SPEED_RIGHT + control_signal;
-    } else {
-        // On the line, move forward
-        left_speed = TARGET_SPEED_LEFT;
-        right_speed = TARGET_SPEED_RIGHT;
+    if (left_speed > 100) {
+    	left_speed = 100;
+    }
+
+    if (left_speed < 0) {
+    	left_speed = 0;
+    }
+
+    if (right_speed > 100) {
+    	right_speed = 100;
+    }
+
+    if (right_speed < 0) {
+    	right_speed = 0;
     }
 
     // Apply control to motors
     l298n_drive_forward(&motor_driver, &htim2, left_speed, right_speed);
+
 }
+
 
 /* USER CODE END 0 */
 
@@ -152,6 +177,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
+
 
   /* USER CODE BEGIN Init */
 
@@ -181,11 +207,15 @@ int main(void)
   tcs34725_set_enable_reg(&rgb_sensor_left, &hi2c1);
   tcs34725_set_enable_reg(&rgb_sensor_right, &hi2c3);
 
+  tcs34725_set_timing_reg(&rgb_sensor_left, &hi2c1);
+  tcs34725_set_timing_reg(&rgb_sensor_right, &hi2c3);
+
   l298n_init(&htim2);
 
   sg90_init(&htim3);
 
   hcsr04_init(&htim4);
+
 
   /* USER CODE END 2 */
 
@@ -205,7 +235,7 @@ int main(void)
 //
 //  l298n_brake(&motor_driver);
 
-  //while(HAL_GPIO_ReadPin(GPIOC, B1_Pin));
+  while(HAL_GPIO_ReadPin(GPIOC, B1_Pin));
 
   //l298n_drive_forward(&motor_driver, &htim2, 100, 100);
 
@@ -213,12 +243,21 @@ int main(void)
 
   //l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
 
+  uint32_t start_time = HAL_GetTick();
+
   while (1)
   {
 
-	  P_Controller();
-	  tcs34725_get_data(&rgb_sensor_left, &hi2c1);
-	  tcs34725_get_data(&rgb_sensor_right, &hi2c3);
+	  PID_Controller(&pid);
+//
+//	  if (rgb_sensor_left.b_ratio > 0.23 && rgb_sensor_right.b_ratio > 0.23) {
+//		  l298n_brake(&motor_driver);
+//		  //break;
+//	  }
+	 // HAL_GPIO_WritePin(GPIOA, LD2_Pin, GPIO_PIN_SET);
+	  HAL_Delay(3);
+//	  tcs34725_get_data(&rgb_sensor_left, &hi2c1);
+//	  tcs34725_get_data(&rgb_sensor_right, &hi2c3);
 //
 ////	  hcsr04_get_distance(&ultrasonic_sensor, &htim4);
 //
@@ -240,6 +279,21 @@ int main(void)
 //		  l298n_brake(&motor_driver);
 //		  sg90_close(&gripper_servo, &htim3);
 //	  }
+
+//	  uint32_t stop_time = HAL_GetTick();
+
+//	  diff = stop_time - start_time;
+//
+//		if (diff >= 6000) {
+//			l298n_brake(&motor_driver);
+//
+//			l298n_rotate_counter(&motor_driver, &htim2, 0, 60);
+//			HAL_Delay(240);
+//			l298n_brake(&motor_driver);
+//
+//
+//			return 0;
+//		}
 
     /* USER CODE END WHILE */
 

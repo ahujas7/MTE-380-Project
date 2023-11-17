@@ -68,5 +68,16 @@ HAL_StatusTypeDef tcs34725_set_enable_reg(TCS34725_HandleTypeDef *dev, I2C_Handl
 	return ret;
 }
 
+HAL_StatusTypeDef tcs34725_set_timing_reg(TCS34725_HandleTypeDef *dev, I2C_HandleTypeDef *hi2c_device) {
 
+	uint8_t val = 0x00;
+	uint8_t command[2] = {TCS34725_COMM_BIT | TCS34725_TIMING_REG, 0xFF};
 
+	HAL_StatusTypeDef ret = HAL_I2C_Master_Transmit(hi2c_device, TCS34725_DEV_ADDR << 1, (uint8_t*)&command, 2, 1000);
+
+	ret = HAL_I2C_Master_Receive(hi2c_device, TCS34725_DEV_ADDR << 1, (uint8_t*)&val, 1, 1000);
+
+	dev->device_id = val; // 0xFF
+
+	return ret;
+}
