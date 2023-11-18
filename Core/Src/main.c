@@ -28,16 +28,20 @@
 #include "SG90.h"
 #include "HCSR04.h"
 // Define P controller constant
-#define KP 1.0
-#define KD 10
-#define KI 0
+#define KP 4
+#define KD 15
+#define KI 0.02
 // Define target values
 
-#define TARGET_SPEED_LEFT 45 // Default: 45   RATIO is 12
-#define TARGET_SPEED_RIGHT 53 // Default: 53
+#define TARGET_SPEED_LEFT 40 // Default: 45   RATIO is 12
+#define TARGET_SPEED_RIGHT 48 // Default: 53
 
+//
+//int target_speed_left = 45;
+//int target_speed_right = 53;
 
 int control_signal = 0;
+int count = 0;
 float error = 0;
 int left_speed = 0, right_speed = 0;
 uint32_t diff = 0;
@@ -133,11 +137,18 @@ void PID_Controller(PID_Controller_HandleTypeDef *pid) {
     pid->previous_error = error;
     pid->integral += error;
 
+    count++;
+
+    if(count > 10) {
+    	pid->integral = 0;
+    	count = 0;
+    }
+
     // Adjust motor speeds based on control signal
 
     // Line is to the right, turn left
     left_speed = TARGET_SPEED_LEFT - control_signal;
-    right_speed = TARGET_SPEED_RIGHT + control_signal + 12;
+    right_speed = TARGET_SPEED_RIGHT + control_signal;
 
     if (left_speed > 100) {
     	left_speed = 100;
@@ -249,6 +260,12 @@ int main(void)
   {
 
 	  PID_Controller(&pid);
+
+	  if (rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) {
+
+		  l298n_brake(&motor_driver);
+		  return 0;
+	  }
 //
 //	  if (rgb_sensor_left.b_ratio > 0.23 && rgb_sensor_right.b_ratio > 0.23) {
 //		  l298n_brake(&motor_driver);
@@ -281,18 +298,16 @@ int main(void)
 //	  }
 
 //	  uint32_t stop_time = HAL_GetTick();
-
+//
 //	  diff = stop_time - start_time;
 //
-//		if (diff >= 6000) {
-//			l298n_brake(&motor_driver);
-//
-//			l298n_rotate_counter(&motor_driver, &htim2, 0, 60);
-//			HAL_Delay(240);
-//			l298n_brake(&motor_driver);
-//
-//
-//			return 0;
+//		if (diff >= 5500) {
+////			l298n_brake(&motor_driver);
+////
+////			l298n_rotate_counter(&motor_driver, &htim2, 0, 60);
+////			HAL_Delay(240);
+//			target_speed_left = 40;
+//			target_speed_right = 48;
 //		}
 
     /* USER CODE END WHILE */
