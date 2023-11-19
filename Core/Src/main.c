@@ -76,6 +76,9 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 
 PID_Controller_HandleTypeDef pid;
+PID_Controller_HandleTypeDef pid2;
+
+
 
 TCS34725_HandleTypeDef rgb_sensor_left;
 TCS34725_HandleTypeDef rgb_sensor_right;
@@ -144,6 +147,15 @@ void PID_Controller(PID_Controller_HandleTypeDef *pid) {
     	count = 0;
     }
 
+//	 if (gripper_servo.position == 1) {
+//
+//		 HAL_Delay(5000);
+//
+//		 sg90_open(&gripper_servo, &htim3);
+//
+//		 gripper_servo.position = 0;
+//	 }
+
     // Adjust motor speeds based on control signal
 
     // Line is to the right, turn left
@@ -171,6 +183,7 @@ void PID_Controller(PID_Controller_HandleTypeDef *pid) {
 
 }
 
+// what if we add another function saem as pid so when that starts that runs and that has a timer which will open the gripper when haltick matches our req.
 
 /* USER CODE END 0 */
 
@@ -233,28 +246,13 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-
-//  l298n_brake(&motor_driver);
-//
-//  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
-//
-//  HAL_Delay(10);
-//
-//  l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
-//
-//  HAL_Delay(7000);
-//
-//  l298n_brake(&motor_driver);
-
   while(HAL_GPIO_ReadPin(GPIOC, B1_Pin));
 
-  //l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+  sg90_open(&gripper_servo, &htim3);
 
-  //HAL_Delay(20);
+  HAL_Delay(1000);
 
-  //l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
-
-  uint32_t start_time = HAL_GetTick();
+//  uint32_t start_time = 4294967295;
 
   while (1)
   {
@@ -264,50 +262,95 @@ int main(void)
 	  if (rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) {
 
 		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(1000);
+
+		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
+
+		  HAL_Delay(10);
+
+		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
+
+		  HAL_Delay(500);
+
+		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(1800);
+
+		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
+
+		  HAL_Delay(10);
+
+		  l298n_rotate_counter(&motor_driver, &htim2, 45, 53);
+
+		  HAL_Delay(1100);
+
+		  l298n_brake(&motor_driver);
+
+		  sg90_close(&gripper_servo, &htim3);
+
+		  HAL_Delay(1000);
+
+		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
+
+		  HAL_Delay(10);
+
+		  l298n_rotate_counter(&motor_driver, &htim2, 45, 53);
+
+		  HAL_Delay(750);
+
+		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(1000);
+
+		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
+
+		  HAL_Delay(10);
+
+		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
+
+		  HAL_Delay(925);
+
+		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(1000);
+
+		  sg90_open(&gripper_servo, &htim3);
+
+		 // HAL_Delay(3000);
+//
+//		  sg90_open (&gripper_servo, &htim3);
+//
+//		  HAL_Delay(1000);
+
+//		  uint32_t stop_time = HAL_GetTick();
+
 		  return 0;
 	  }
+
+
+//	  if (gripper_servo.position == 1) {
 //
-//	  if (rgb_sensor_left.b_ratio > 0.23 && rgb_sensor_right.b_ratio > 0.23) {
-//		  l298n_brake(&motor_driver);
-//		  //break;
-//	  }
-	 // HAL_GPIO_WritePin(GPIOA, LD2_Pin, GPIO_PIN_SET);
-	  HAL_Delay(3);
-//	  tcs34725_get_data(&rgb_sensor_left, &hi2c1);
-//	  tcs34725_get_data(&rgb_sensor_right, &hi2c3);
+//		  HAL_Delay(5000);
 //
-////	  hcsr04_get_distance(&ultrasonic_sensor, &htim4);
+//		  sg90_open(&gripper_servo, &htim3);
 //
-//	  l298n_drive_forward(&motor_driver, &htim2, 45, 53.5);
-//
-//	  if (rgb_sensor_left.r_ratio > 0.37) {
-//
-//		  l298n_drive_forward(&motor_driver, &htim2, 45, 75);
-//		  HAL_Delay(300);
-//	  }
-//	  else if (rgb_sensor_left.r_ratio - rgb_sensor_right.r_ratio < 0.2) {
-//
-//		  l298n_drive_forward(&motor_driver, &htim2, 48, 48.5);
-//		  HAL_Delay(200);
+//		  gripper_servo.position = 0;
 //	  }
 
-//	  else if ((rgb_sensor_right.r_ratio >= 0.40 || rgb_sensor_left.r_ratio >= 0.40) && gripper_servo.position == 0) {
-//
-//		  l298n_brake(&motor_driver);
-//		  sg90_close(&gripper_servo, &htim3);
-//	  }
+
 
 //	  uint32_t stop_time = HAL_GetTick();
 //
 //	  diff = stop_time - start_time;
 //
 //		if (diff >= 5500) {
-////			l298n_brake(&motor_driver);
-////
-////			l298n_rotate_counter(&motor_driver, &htim2, 0, 60);
-////			HAL_Delay(240);
-//			target_speed_left = 40;
-//			target_speed_right = 48;
+//
+//			HAL_Delay(240);
+//
+//			sg90_open(&gripper_servo, &htim3);
+//
+//			return 0;
 //		}
 
     /* USER CODE END WHILE */

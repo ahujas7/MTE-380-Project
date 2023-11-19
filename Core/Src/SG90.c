@@ -17,7 +17,7 @@ HAL_StatusTypeDef sg90_init(TIM_HandleTypeDef *timer) {
 
 void sg90_close(SG90_HandleTypeDef *dev, TIM_HandleTypeDef *timer) {
 
-	for(int i = 475; i < 1400; i += 35){
+	for(int i = 775; i < 1600; i += 35){
 
 	__HAL_TIM_SET_COMPARE(timer, SERVO_CHANNEL, i);
 
@@ -30,7 +30,7 @@ void sg90_close(SG90_HandleTypeDef *dev, TIM_HandleTypeDef *timer) {
 
 void sg90_open(SG90_HandleTypeDef *dev, TIM_HandleTypeDef *timer) {
 
-	for(int i=1400; i > 475; i -= 35){
+	for(int i = 1600; i > 775; i -= 35){
 
 	__HAL_TIM_SET_COMPARE(timer, SERVO_CHANNEL, i);
 
