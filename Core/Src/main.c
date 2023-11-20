@@ -36,7 +36,7 @@
 #define TARGET_SPEED_LEFT 45 // Default: 45   RATIO is 12
 #define TARGET_SPEED_RIGHT 53 // Default: 53
 
-//
+
 //int target_speed_left = 45;
 //int target_speed_right = 53;
 
@@ -253,126 +253,137 @@ int main(void)
 //	  l298n_drive_forward(&motor_driver, &htim2, 40, 48);
 	  PID_Controller(&pid);
 
-	  if (rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) {
+	  if (rgb_sensor_left.r_ratio < WOOD_VALUE && rgb_sensor_left.g_ratio < WOOD_VALUE && rgb_sensor_left.b_ratio < WOOD_VALUE &&
+		  rgb_sensor_right.r_ratio < WOOD_VALUE && rgb_sensor_right.g_ratio < WOOD_VALUE && rgb_sensor_right.b_ratio < WOOD_VALUE) {
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(200);
-
-		  //first reverse after detecting blue
-
-		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
-
-		  HAL_Delay(30);
-
-		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
-
-		  HAL_Delay(950);
-
-		  l298n_brake(&motor_driver);
-
-		  HAL_Delay(150);
-
-
-		  //180 degree turn
-
-		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
-
-		  HAL_Delay(30);
-
-		  l298n_rotate_counter(&motor_driver, &htim2, 50, 62);
-
-		  HAL_Delay(950);
-
-		  l298n_brake(&motor_driver);
-
-		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
-
-		  HAL_Delay(375);
-
-		  l298n_brake(&motor_driver);
-
-		  HAL_Delay(100);
-
-		  //Pickup
-
-		  sg90_close(&gripper_servo, &htim3);
-
-		  HAL_Delay(150);
-
-		  //Rotate towards Green Box
-
-		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
-
-		  HAL_Delay(30);
-
-		  l298n_rotate_counter(&motor_driver, &htim2, 50, 62);
-
-		  HAL_Delay(650);
-
-		  l298n_brake(&motor_driver);
-
-		  HAL_Delay(100);
-
-		  //Reverse to Green box
-
-		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
-
-		  HAL_Delay(30);
-
-		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
-
-		  HAL_Delay(875);
-
-		  l298n_brake(&motor_driver);
-
-		  HAL_Delay(100);
-
-		  //drop off
-
-		  sg90_open(&gripper_servo, &htim3);
-
-		  HAL_Delay(1000);
-
-		  //turn back towards red line
-
-		  l298n_rotate_clockwise(&motor_driver, &htim2, 100, 100);
-
-		  HAL_Delay(30);
-
-		  l298n_rotate_clockwise(&motor_driver, &htim2, 50, 62);
-
-		  HAL_Delay(175);
-
-		  l298n_brake(&motor_driver);
-
-		  HAL_Delay(50);
-
-		  //Drive to the red line
-
-		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
-
-		  HAL_Delay(30);
-
-		  l298n_drive_forward(&motor_driver, &htim2, 45, 53);
-
-		  HAL_Delay(1150);
-
-		  l298n_brake(&motor_driver);
-
-		  HAL_Delay(1000);
-
-		  //Catch PID again
-
-		  continue;
-
-		  l298n_drive_forward(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT + 14);
-
-		  if(rgb_sensor_left.r_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.r_ratio > rgb_sensor_right.g_ratio)
-
-		  continue;
+		  return 0;
 
 	  }
+
+//	  if (rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) {
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  return 0;
+
+//		  HAL_Delay(200);
+//
+//		  //first reverse after detecting blue
+//
+//		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
+//
+//		  HAL_Delay(30);
+//
+//		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
+//
+//		  HAL_Delay(950);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(150);
+//
+//
+//		  //180 degree turn
+//
+//		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
+//
+//		  HAL_Delay(30);
+//
+//		  l298n_rotate_counter(&motor_driver, &htim2, 50, 62);
+//
+//		  HAL_Delay(950);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
+//
+//		  HAL_Delay(375);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(100);
+//
+//		  //Pickup
+//
+//		  sg90_close(&gripper_servo, &htim3);
+//
+//		  HAL_Delay(150);
+//
+//		  //Rotate towards Green Box
+//
+//		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
+//
+//		  HAL_Delay(30);
+//
+//		  l298n_rotate_counter(&motor_driver, &htim2, 50, 62);
+//
+//		  HAL_Delay(650);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(100);
+//
+//		  //Reverse to Green box
+//
+//		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
+//
+//		  HAL_Delay(30);
+//
+//		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
+//
+//		  HAL_Delay(875);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(100);
+//
+//		  //drop off
+//
+//		  sg90_open(&gripper_servo, &htim3);
+//
+//		  HAL_Delay(1000);
+//
+//		  //turn back towards red line
+//
+//		  l298n_rotate_clockwise(&motor_driver, &htim2, 100, 100);
+//
+//		  HAL_Delay(30);
+//
+//		  l298n_rotate_clockwise(&motor_driver, &htim2, 50, 62);
+//
+//		  HAL_Delay(175);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(50);
+//
+//		  //Drive to the red line
+//
+//		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+//
+//		  HAL_Delay(30);
+//
+//		  l298n_drive_forward(&motor_driver, &htim2, 45, 53);
+//
+//		  HAL_Delay(1150);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(1000);
+//
+//		  //Catch PID again
+//
+//		  continue;
+//
+//		  l298n_drive_forward(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT + 14);
+//
+//		  if(rgb_sensor_left.r_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.r_ratio > rgb_sensor_right.g_ratio)
+//
+//		  continue;
+
+//	  }
 
     /* USER CODE END WHILE */
 

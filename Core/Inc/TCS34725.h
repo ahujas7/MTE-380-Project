@@ -23,6 +23,8 @@
 #define TCS34725_COMM_BIT				0x80
 #define TCS34725_ITER_COMM				0xA0
 
+#define WOOD_VALUE 0.35
+
 
 #define TO_16_BIT(b1, b2)				((uint16_t)b1 << 8) | (uint16_t)b2
 
