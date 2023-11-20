@@ -1,2 +1,2 @@
-HCSR04.c:11:19:hcsr04_init	1
-HCSR04.c:21:6:hcsr04_get_distance	6
+../Core/Src/HCSR04.c:11:19:hcsr04_init	1
+../Core/Src/HCSR04.c:21:6:hcsr04_get_distance	6

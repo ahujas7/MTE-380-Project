@@ -30,7 +30,7 @@
 // Define P controller constant
 #define KP 4
 #define KD 15
-#define KI 0.02
+#define KI 0.025
 // Define target values
 
 #define TARGET_SPEED_LEFT 40 // Default: 45   RATIO is 12
@@ -263,7 +263,7 @@ int main(void)
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(1000);
+		  HAL_Delay(500);
 
 		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
 
@@ -271,37 +271,37 @@ int main(void)
 
 		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
 
-		  HAL_Delay(500);
+		  HAL_Delay(460);
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(1800);
+		  HAL_Delay(100);
 
 		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
 
 		  HAL_Delay(10);
 
-		  l298n_rotate_counter(&motor_driver, &htim2, 45, 53);
+		  l298n_rotate_counter(&motor_driver, &htim2, 40, 48);
 
-		  HAL_Delay(1100);
+		  HAL_Delay(1350);
 
 		  l298n_brake(&motor_driver);
 
 		  sg90_close(&gripper_servo, &htim3);
 
-		  HAL_Delay(1000);
+		  HAL_Delay(100);
 
 		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
 
 		  HAL_Delay(10);
 
-		  l298n_rotate_counter(&motor_driver, &htim2, 45, 53);
+		  l298n_rotate_counter(&motor_driver, &htim2, 40, 48);
 
-		  HAL_Delay(750);
+		  HAL_Delay(900);
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(1000);
+		  HAL_Delay(100);
 
 		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
 
@@ -313,9 +313,34 @@ int main(void)
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(1000);
+		  HAL_Delay(100);
 
 		  sg90_open(&gripper_servo, &htim3);
+
+		  HAL_Delay(1000);
+
+		  l298n_rotate_clockwise(&motor_driver, &htim2, 100, 100);
+
+		  HAL_Delay(10);
+
+		  l298n_rotate_clockwise(&motor_driver, &htim2, 40, 48);
+
+		  HAL_Delay(400);
+
+		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(50);
+
+		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+
+		  HAL_Delay(10);
+
+		  l298n_drive_forward(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT + 14);
+
+		  if(rgb_sensor_left.r_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.r_ratio > rgb_sensor_right.g_ratio)
+
+		  continue;
+
 
 		 // HAL_Delay(3000);
 //
@@ -325,7 +350,6 @@ int main(void)
 
 //		  uint32_t stop_time = HAL_GetTick();
 
-		  return 0;
 	  }
 
 
