@@ -33,8 +33,8 @@
 #define KI 0.025
 // Define target values
 
-#define TARGET_SPEED_LEFT 40 // Default: 45   RATIO is 12
-#define TARGET_SPEED_RIGHT 48 // Default: 53
+#define TARGET_SPEED_LEFT 45 // Default: 45   RATIO is 12
+#define TARGET_SPEED_RIGHT 53 // Default: 53
 
 //
 //int target_speed_left = 45;
@@ -117,7 +117,6 @@ float getError() {
 		HAL_GPIO_WritePin(GPIOA, LD2_Pin, GPIO_PIN_SET);
 	}
 
-
     // Calculate the error based on the difference between sensor readings
     error = (rgb_sensor_left.r_ratio - rgb_sensor_right.r_ratio) * 100;
 
@@ -147,15 +146,6 @@ void PID_Controller(PID_Controller_HandleTypeDef *pid) {
     	count = 0;
     }
 
-//	 if (gripper_servo.position == 1) {
-//
-//		 HAL_Delay(5000);
-//
-//		 sg90_open(&gripper_servo, &htim3);
-//
-//		 gripper_servo.position = 0;
-//	 }
-
     // Adjust motor speeds based on control signal
 
     // Line is to the right, turn left
@@ -183,7 +173,7 @@ void PID_Controller(PID_Controller_HandleTypeDef *pid) {
 
 }
 
-// what if we add another function saem as pid so when that starts that runs and that has a timer which will open the gripper when haltick matches our req.
+// what if we add another function same as PID so when that starts that runs and that has a timer which will open the gripper when haltick matches our req.
 
 /* USER CODE END 0 */
 
@@ -257,83 +247,124 @@ int main(void)
   while (1)
   {
 
+//	  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+//	  HAL_Delay(10);
+//
+//	  l298n_drive_forward(&motor_driver, &htim2, 40, 48);
 	  PID_Controller(&pid);
 
 	  if (rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) {
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(500);
+		  HAL_Delay(200);
+
+		  //first reverse after detecting blue
 
 		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
 
-		  HAL_Delay(10);
+		  HAL_Delay(30);
 
 		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
 
-		  HAL_Delay(460);
+		  HAL_Delay(950);
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(100);
+		  HAL_Delay(150);
+
+
+		  //180 degree turn
 
 		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
 
-		  HAL_Delay(10);
+		  HAL_Delay(30);
 
-		  l298n_rotate_counter(&motor_driver, &htim2, 40, 48);
+		  l298n_rotate_counter(&motor_driver, &htim2, 50, 62);
 
-		  HAL_Delay(1350);
+		  HAL_Delay(950);
 
 		  l298n_brake(&motor_driver);
+
+		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
+
+		 HAL_Delay(375);
+
+		 l298n_brake(&motor_driver);
+
+		 HAL_Delay(100);
+
+		  //Pickup
 
 		  sg90_close(&gripper_servo, &htim3);
 
-		  HAL_Delay(100);
+		  HAL_Delay(150);
+
+		  //Rotate towards Green Box
 
 		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
 
-		  HAL_Delay(10);
+		  HAL_Delay(30);
 
-		  l298n_rotate_counter(&motor_driver, &htim2, 40, 48);
+		  l298n_rotate_counter(&motor_driver, &htim2, 50, 62);
 
-		  HAL_Delay(900);
+		  HAL_Delay(650);
 
 		  l298n_brake(&motor_driver);
 
 		  HAL_Delay(100);
+
+		  //Reverse to Green box
 
 		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
 
-		  HAL_Delay(10);
+		  HAL_Delay(30);
 
 		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
 
-		  HAL_Delay(925);
+		  HAL_Delay(875);
 
 		  l298n_brake(&motor_driver);
 
 		  HAL_Delay(100);
+
+		  //drop off
 
 		  sg90_open(&gripper_servo, &htim3);
 
 		  HAL_Delay(1000);
 
+		  //turn back towards red line
+
 		  l298n_rotate_clockwise(&motor_driver, &htim2, 100, 100);
 
-		  HAL_Delay(10);
+		  HAL_Delay(30);
 
-		  l298n_rotate_clockwise(&motor_driver, &htim2, 40, 48);
+		  l298n_rotate_clockwise(&motor_driver, &htim2, 50, 62);
 
-		  HAL_Delay(400);
+		  HAL_Delay(175);
 
 		  l298n_brake(&motor_driver);
 
 		  HAL_Delay(50);
 
+		  //Drive to the red line
+
 		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
 
-		  HAL_Delay(10);
+		  HAL_Delay(30);
+
+		  l298n_drive_forward(&motor_driver, &htim2, 45, 53);
+
+		  HAL_Delay(1150);
+
+		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(1000);
+
+		  //Catch PID again
+
+		  continue;
 
 		  l298n_drive_forward(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT + 14);
 
@@ -341,41 +372,7 @@ int main(void)
 
 		  continue;
 
-
-		 // HAL_Delay(3000);
-//
-//		  sg90_open (&gripper_servo, &htim3);
-//
-//		  HAL_Delay(1000);
-
-//		  uint32_t stop_time = HAL_GetTick();
-
 	  }
-
-
-//	  if (gripper_servo.position == 1) {
-//
-//		  HAL_Delay(5000);
-//
-//		  sg90_open(&gripper_servo, &htim3);
-//
-//		  gripper_servo.position = 0;
-//	  }
-
-
-
-//	  uint32_t stop_time = HAL_GetTick();
-//
-//	  diff = stop_time - start_time;
-//
-//		if (diff >= 5500) {
-//
-//			HAL_Delay(240);
-//
-//			sg90_open(&gripper_servo, &htim3);
-//
-//			return 0;
-//		}
 
     /* USER CODE END WHILE */
 
