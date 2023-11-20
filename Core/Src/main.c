@@ -288,11 +288,11 @@ int main(void)
 
 		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
 
-		 HAL_Delay(375);
+		  HAL_Delay(375);
 
-		 l298n_brake(&motor_driver);
+		  l298n_brake(&motor_driver);
 
-		 HAL_Delay(100);
+		  HAL_Delay(100);
 
 		  //Pickup
 
