@@ -28,7 +28,7 @@
 #include "SG90.h"
 #include "HCSR04.h"
 // Define P controller constant
-#define KP 3.5
+#define KP 3
 #define KD 15
 #define KI 0.02
 // Define target values
@@ -37,13 +37,14 @@
 #define TARGET_SPEED_RIGHT 48 // Default: 53
 
 
-int target_speed_left = 36;
-int target_speed_right = 42;
+int target_speed_left = 40;
+int target_speed_right = 48;
 
 int control_signal = 0;
 int count = 0;
 float error = 0;
 int left_speed = 0, right_speed = 0;
+int slowed = 0;
 uint32_t diff = 0;
 /* USER CODE END Includes */
 
@@ -251,16 +252,18 @@ int main(void)
 
 	  PID_Controller(&pid);
 
-	  if (HAL_GetTick() - start_time > 9000) {
+	  if (HAL_GetTick() - start_time > 7000 && slowed == 0) {
 
 		  target_speed_left = 33;
 		  target_speed_right = 40;
+
+		  slowed = 1;
 	  }
 
 	  if (rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) {
 
 		  l298n_brake(&motor_driver);
-		  HAL_Delay(200);
+		  HAL_Delay(10);
 
 
 		  //First reverse after detecting blue
@@ -271,7 +274,7 @@ int main(void)
 		  HAL_Delay(550);
 
 		  l298n_brake(&motor_driver);
-		  HAL_Delay(150);
+		  HAL_Delay(10);
 
 		  hcsr04_get_distance(&ultrasonic_sensor, &htim3);
 
@@ -297,7 +300,7 @@ int main(void)
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(500);
+		  HAL_Delay(10);
 
 		  while (ultrasonic_sensor.distance > 21) {
 
@@ -315,11 +318,11 @@ int main(void)
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(500);
+		  HAL_Delay(10);
 
 		  sg90_close(&gripper_servo, &htim3);
 
-		  HAL_Delay(500);
+		  HAL_Delay(10);
 
 		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
 		  HAL_Delay(30);
@@ -350,11 +353,11 @@ int main(void)
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(500);
+		  HAL_Delay(10);
 
 		  sg90_open(&gripper_servo, &htim3);
 
-		  HAL_Delay(500);
+		  HAL_Delay(100);
 
 		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
 		  HAL_Delay(30);
@@ -366,8 +369,8 @@ int main(void)
 
 		  HAL_Delay(500);
 
-		  target_speed_left = 60;
-		  target_speed_right = 72;
+		  target_speed_left = 40;
+		  target_speed_right = 48;
 
 		  continue;
 
