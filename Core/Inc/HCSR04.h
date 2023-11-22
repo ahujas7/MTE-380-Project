@@ -15,6 +15,11 @@
 #define ECHO_PIN GPIO_PIN_8
 #define ECHO_PORT GPIOC
 
+#define WALL_TURN_DISTANCE_MIN		22
+#define WALL_TURN_DISTANCE_MAX		30
+
+
+
 // Device Struct
 typedef struct __HCSR04_HandleTypeDef {
 

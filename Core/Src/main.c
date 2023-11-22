@@ -28,7 +28,7 @@
 #include "SG90.h"
 #include "HCSR04.h"
 // Define P controller constant
-#define KP 4
+#define KP 3.5
 #define KD 15
 #define KI 0.02
 // Define target values
@@ -37,8 +37,8 @@
 #define TARGET_SPEED_RIGHT 48 // Default: 53
 
 
-int target_speed_left = 40;
-int target_speed_right = 48;
+int target_speed_left = 36;
+int target_speed_right = 42;
 
 int control_signal = 0;
 int count = 0;
@@ -244,12 +244,14 @@ int main(void)
 
   uint32_t start_time = HAL_GetTick();
 
+  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+
   while (1)
   {
 
 	  PID_Controller(&pid);
 
-	  if (HAL_GetTick() - start_time > 7500) {
+	  if (HAL_GetTick() - start_time > 9000) {
 
 		  target_speed_left = 33;
 		  target_speed_right = 40;
@@ -258,50 +260,162 @@ int main(void)
 	  if (rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) {
 
 		  l298n_brake(&motor_driver);
+		  HAL_Delay(200);
 
-		  HAL_Delay(300);
 
-		  //first reverse after detecting blue
-
+		  //First reverse after detecting blue
 		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
-
 		  HAL_Delay(30);
 
-		  l298n_drive_reverse(&motor_driver, &htim2, 33, 40);
-
-		  HAL_Delay(1500);
+		  l298n_drive_reverse(&motor_driver, &htim2, TARGET_SPEED_LEFT, TARGET_SPEED_RIGHT);
+		  HAL_Delay(550);
 
 		  l298n_brake(&motor_driver);
-
 		  HAL_Delay(150);
 
-		  //180 degree turn
+		  hcsr04_get_distance(&ultrasonic_sensor, &htim3);
 
-		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
+		  int counter = 0;
 
-		  HAL_Delay(30);
+		  while(!(ultrasonic_sensor.distance >= WALL_TURN_DISTANCE_MIN &&
+				  ultrasonic_sensor.distance <= WALL_TURN_DISTANCE_MAX && counter >= 17)){
 
-		  l298n_rotate_counter(&motor_driver, &htim2, 33, 40);
+			  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
+		      HAL_Delay(30);
 
-		  HAL_Delay(2050);
+		      l298n_rotate_counter(&motor_driver, &htim2, 40, 48);
+		      HAL_Delay(50);
+
+		      l298n_brake(&motor_driver);
+		      HAL_Delay(250);
+
+		      counter += 1;
+
+			  hcsr04_get_distance(&ultrasonic_sensor, &htim3);
+
+		  }
 
 		  l298n_brake(&motor_driver);
 
-		  l298n_drive_reverse(&motor_driver, &htim2, 33, 40);
+		  HAL_Delay(500);
 
+		  while (ultrasonic_sensor.distance > 21) {
+
+			  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
+			  HAL_Delay(30);
+
+			  l298n_drive_reverse(&motor_driver, &htim2, 40, 48);
+			  HAL_Delay(50);
+
+			  l298n_brake(&motor_driver);
+			  HAL_Delay(250);
+
+			  hcsr04_get_distance(&ultrasonic_sensor, &htim3);
+		  }
+
+		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(500);
+
+		  sg90_close(&gripper_servo, &htim3);
+
+		  HAL_Delay(500);
+
+		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+		  HAL_Delay(30);
+
+		  l298n_drive_forward(&motor_driver, &htim2, 40, 48);
+		  HAL_Delay(430);
+
+		  l298n_brake(&motor_driver);
+
+		  for (int i = 0; i < 10; i++) {
+
+			  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
+			  HAL_Delay(30);
+
+			  l298n_rotate_counter(&motor_driver, &htim2, 40, 48);
+			  HAL_Delay(50);
+
+			  l298n_brake(&motor_driver);
+			  HAL_Delay(250);
+		  }
+
+
+		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
+		  HAL_Delay(30);
+
+		  l298n_drive_reverse(&motor_driver, &htim2, 40, 48);
 		  HAL_Delay(800);
 
 		  l298n_brake(&motor_driver);
 
-		  HAL_Delay(100);
+		  HAL_Delay(500);
 
-		  //Pickup
+		  sg90_open(&gripper_servo, &htim3);
 
-		  sg90_close(&gripper_servo, &htim3);
+		  HAL_Delay(500);
 
-		  HAL_Delay(150);
+		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
+		  HAL_Delay(30);
 
-		  return 0;
+		  l298n_drive_forward(&motor_driver, &htim2, 40, 48);
+		  HAL_Delay(750);
+
+		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(500);
+
+		  target_speed_left = 60;
+		  target_speed_right = 72;
+
+		  continue;
+
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(300);
+//
+//		  //first reverse after detecting blue
+//
+//		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
+//
+//		  HAL_Delay(30);
+//
+//		  l298n_drive_reverse(&motor_driver, &htim2, 33, 40);
+//
+//		  HAL_Delay(1500);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(150);
+//
+//		  //180 degree turn
+//
+//		  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
+//
+//		  HAL_Delay(30);
+//
+//		  l298n_rotate_counter(&motor_driver, &htim2, 33, 40);
+//
+//		  HAL_Delay(2050);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  l298n_drive_reverse(&motor_driver, &htim2, 33, 40);
+//
+//		  HAL_Delay(800);
+//
+//		  l298n_brake(&motor_driver);
+//
+//		  HAL_Delay(100);
+//
+//		  //Pickup
+//
+//		  sg90_close(&gripper_servo, &htim3);
+//
+//		  HAL_Delay(150);
+//
+//		  return 0;
 
 		  //Rotate towards Green Box
 //
@@ -367,7 +481,7 @@ int main(void)
 //
 //		  continue;
 
-		  return 0;
+//		  return 0;
 	  }
 
 
