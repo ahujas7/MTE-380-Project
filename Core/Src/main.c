@@ -260,11 +260,10 @@ int main(void)
 		  slowed = 1;
 	  }
 
-	  if (rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) {
+	  if ((rgb_sensor_left.b_ratio > rgb_sensor_left.g_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.g_ratio) && (rgb_sensor_left.b_ratio > rgb_sensor_left.r_ratio || rgb_sensor_right.b_ratio > rgb_sensor_right.r_ratio)) {
 
 		  l298n_brake(&motor_driver);
 		  HAL_Delay(10);
-
 
 		  //First reverse after detecting blue
 		  l298n_drive_reverse(&motor_driver, &htim2, 100, 100);
@@ -280,8 +279,10 @@ int main(void)
 
 		  int counter = 0;
 
+		  // 17 or 18 depending on your mood
+
 		  while(!(ultrasonic_sensor.distance >= WALL_TURN_DISTANCE_MIN &&
-				  ultrasonic_sensor.distance <= WALL_TURN_DISTANCE_MAX && counter >= 17)){
+				  ultrasonic_sensor.distance <= WALL_TURN_DISTANCE_MAX && counter >= 18)){
 
 			  l298n_rotate_counter(&motor_driver, &htim2, 100, 100);
 		      HAL_Delay(30);
@@ -360,10 +361,26 @@ int main(void)
 		  HAL_Delay(100);
 
 		  l298n_drive_forward(&motor_driver, &htim2, 100, 100);
-		  HAL_Delay(30);
+		  HAL_Delay(50);
 
 		  l298n_drive_forward(&motor_driver, &htim2, 40, 48);
-		  HAL_Delay(750);
+		  HAL_Delay(700);
+
+//		  while (!(rgb_sensor_left.r_ratio > 0.45 || rgb_sensor_right.r_ratio > 0.45)) {
+//
+//			  tcs34725_get_data(&rgb_sensor_left, &hi2c1);
+//			  tcs34725_get_data(&rgb_sensor_right, &hi2c3);
+//		  }
+
+		  l298n_brake(&motor_driver);
+
+		  HAL_Delay(200);
+
+		  l298n_rotate_clockwise(&motor_driver, &htim2, 100, 100);
+		  HAL_Delay(30);
+
+		  l298n_rotate_clockwise(&motor_driver, &htim2, 40, 48);
+		  HAL_Delay(150);
 
 		  l298n_brake(&motor_driver);
 
